@@ -3,7 +3,7 @@ import time
 import sys
 from player import Player
 from ball import Ball
-from settings import WIDTH, HEIGHT, player_width, player_height
+from settings import WIDTH, HEIGHT, player_width, player_height, GAME_MODE
 
 
 class Table:
@@ -16,7 +16,6 @@ class Table:
 
         # text info
         self.font = pygame.font.SysFont('Bauhaus 93', 60)
-        self.inst_font = pygame.font.SysFont('Bauhaus 93', 30)
         self.color = pygame.Color("white")
 
     # create and add player to the screen
@@ -43,7 +42,7 @@ class Table:
         if pygame.Rect.colliderect(self.ball.rect, self.playerB.rect):
             self.ball.direction = "left"
 
-    def _bot_opponent(self):
+    def _bot_movement(self):
         if self.ball.direction == "left" and self.ball.rect.centery != self.playerA.rect.centery:
             if self.ball.rect.top <= self.playerA.rect.top:
                 if self.playerA.rect.top > 0:
@@ -52,19 +51,31 @@ class Table:
                 if self.playerA.rect.bottom < HEIGHT:
                     self.playerA.move_bottom()
 
-    def player_move(self):
+    def _player_movement(self, player, up, down):
         keys = pygame.key.get_pressed()
 
-        # for bot opponent controls
-        self._bot_opponent()
+        if keys[up]:
+            if player.rect.top > 0:
+                player.move_up()
+        if keys[down]:
+            if player.rect.bottom < HEIGHT:
+                player.move_bottom()
 
-        # for player controls
-        if keys[pygame.K_UP]:
-            if self.playerB.rect.top > 0:
-                self.playerB.move_up()
-        if keys[pygame.K_DOWN]:
-            if self.playerB.rect.bottom < HEIGHT:
-                self.playerB.move_bottom()
+    def player_move(self):
+        # If 1 player
+        if GAME_MODE == 1:
+            self._bot_opponent()
+        else:
+            self._player_movement(self.playerA, pygame.K_w, pygame.K_s)
+        self._player_movement(self.playerB, pygame.K_UP, pygame.K_DOWN)
+
+        # # for player controls
+        # if keys[pygame.K_UP]:
+        #     if self.playerB.rect.top > 0:
+        #         self.playerB.move_up()
+        # if keys[pygame.K_DOWN]:
+        #     if self.playerB.rect.bottom < HEIGHT:
+        #         self.playerB.move_bottom()
 
     def _show_score(self):
         A_score, B_score = str(self.playerA.score), str(self.playerB.score)
