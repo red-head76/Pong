@@ -1,12 +1,11 @@
 import pygame
 import random
-from settings import WIDTH, HEIGHT
 
 pygame.init()
 
 
 class Ball:
-    def __init__(self, x, y, radius):
+    def __init__(self, x, y, radius, settings):
         self.x = x
         self.y = y
         self.radius = radius
@@ -14,7 +13,8 @@ class Ball:
         self.color = pygame.Color("red")
         self.direction = None
         self.speed_x = 0
-        self.speed_y = 0
+        self.speed_y = 18
+        self.settings = settings
         self._random_direction()
 
     def _random_direction(self):
@@ -29,7 +29,7 @@ class Ball:
             self.speed_x = -18
 
         # vertical handling
-        if self.rect.y >= HEIGHT - self.radius:
+        if self.rect.y >= self.settings.height - self.radius:
             self.speed_y = -18
         elif self.rect.y <= 0 + self.radius:
             self.speed_y = 18

@@ -1,18 +1,17 @@
 import pygame
 import pygame_menu
 import sys
-from settings import WIDTH, HEIGHT, GAME_MODE
 from table import Table
-from button import Button
-
-pygame.init()
-
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Pong")
+from settings import settings
 
 
 class Pong:
-    def __init__(self, screen):
+    def __init__(self):
+        pygame.init()
+        pygame.display.set_caption("Pong")
+
+        self.settings = settings()
+        screen = pygame.display.set_mode((self.settings.width, self.settings.height))
         self.screen = screen
         self.FPS = pygame.time.Clock()
 
@@ -23,8 +22,8 @@ class Pong:
         my_theme = pygame_menu.themes.THEME_DARK.copy()
         my_theme.title_bar_style = pygame_menu.widgets.MENUBAR_STYLE_UNDERLINE
         my_theme.widget_font = pygame_menu.font.FONT_8BIT
-        mainmenu = pygame_menu.Menu(width=WIDTH,
-                                    height=HEIGHT,
+        mainmenu = pygame_menu.Menu(width=self.settings.width,
+                                    height=self.settings.height,
                                     title='Pong game',
                                     theme=my_theme)
         mainmenu.add.selector('Number of Players :',
@@ -32,15 +31,15 @@ class Pong:
         mainmenu.add.button('Play', self.game_loop)
         mainmenu.add.button('Quit', pygame_menu.events.EXIT)
 
-        mainmenu.mainloop(screen)
+        mainmenu.mainloop(self.screen)
         pygame.display.update()
 
     # Functions to start the game
     def set_players(self, value, players):
-        GAME_MODE = players  # Update the game mode in settings
+        self.settings.n_players = players  # Update the game mode in settings
 
     def game_loop(self):
-        table = Table(self.screen)  # pass to table the player_option saved to table.game_mode
+        table = Table(self.screen, self.settings)
         while True:
             self.screen.fill("black")
 
@@ -56,5 +55,5 @@ class Pong:
 
 
 if __name__ == "__main__":
-    pong_instance = Pong(screen)
+    pong_instance = Pong()
     pong_instance.main()
